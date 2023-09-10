@@ -18,7 +18,6 @@ export const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [largeImageURL, setLargeImageURL] = useState('');
   const [tag, setTag] = useState('');
-1
   const onSearch = evt => {
     evt.preventDefault();
     const value = evt.target.query.value.trim('');
