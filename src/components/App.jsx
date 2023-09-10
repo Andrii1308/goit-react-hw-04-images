@@ -4,7 +4,7 @@ import { Button } from "./Button/Button";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Layout } from "./Layout";
 import { Loader } from "./Loader/Loader";
-import { SearchBar } from "./Searchbar/SearchBar";
+import { SearchBar } from "./SearchBar/SearchBar";
 import { toast, Toaster } from 'react-hot-toast';
 import { ModalComponent } from "./Modal/Modal";
 
