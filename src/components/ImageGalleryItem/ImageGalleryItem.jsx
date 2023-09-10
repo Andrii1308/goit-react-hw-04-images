@@ -1,23 +1,9 @@
-import PropTypes from 'prop-types';
-import { ImageGalleryCard, GalleryCardImg } from './ImageGalleryItem.styled';
+import { ImageGalleryImg } from "./ImageGalleryItem.styled"
 
-export const ImageGalleryItem = ({ pictures, onClickImg }) => {
-  return pictures.map((picture, index) => {
+export const ImageGalleryItem = ({url, tag}) => {
     return (
-      <ImageGalleryCard key={index}>
-        <GalleryCardImg
-          onClick={() => {
-            onClickImg(picture.largeImageURL);
-          }}
-          src={picture.webformatURL}
-          alt={picture.tags}
-        />
-      </ImageGalleryCard>
-    );
-  });
-};
-
-ImageGalleryItem.propTypes = {
-  pictures: PropTypes.array.isRequired,
-  onClickImg: PropTypes.func.isRequired,
-};
+        <>
+           <ImageGalleryImg src={url} alt={tag} />
+        </>
+    )
+}

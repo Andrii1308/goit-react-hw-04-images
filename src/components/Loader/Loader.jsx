@@ -1,16 +1,20 @@
-import { Blocks } from 'react-loader-spinner';
+import { ThreeDots  } from 'react-loader-spinner'
+import { Container } from './Loader.styled'
+
 
 export const Loader = () => {
-  return (
-    <div style={{ textAlign: 'center' }}>
-      <Blocks
-      visible={true}
-      height="80"
-      width="80"
-      ariaLabel="blocks-loading"
-      wrapperStyle={{}}
-      wrapperClass="blocks-wrapper"
-      />
-    </div>
-  );
-};
+    return (
+        <Container>
+        <ThreeDots 
+            height="80" 
+            width="80" 
+            radius="9"
+            color="#4fa94d" 
+            ariaLabel="three-dots-loading"
+            wrapperStyle={{}}
+            wrapperClassName=""
+            visible={true}
+        />
+        </Container>
+    )
+}

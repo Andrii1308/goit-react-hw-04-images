@@ -1,57 +1,19 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import {
-  SearchbarContainer,
-  SearchForm,
-  SearchFormBtn,
-  SearchFormBtnLabel,
-  SearchFormInput,
-} from './Searchbar.styled';
+import { SearchBarHeader, SearchButton, SearchForm, SearchInput } from "./Searchbar.styled"
+import { BsSearchHeart } from 'react-icons/bs';
 
-export class Searchbar extends Component {
-  state = {
-    search: '',
-  };
-
-  searchResult = event => {
-    this.setState({
-      search: event.currentTarget.value,
-    });
-  };
-
-  handleSubmit = event => {
-    event.preventDefault();
-    const { search } = this.state;
-
-    this.props.onSubmit(search);
-    this.setState({
-      search: '',
-    });
-  };
-
-  render() {
-    const { search } = this.state;
+export const SearchBar = ({ onSubmit }) => {
     return (
-      <SearchbarContainer>
-        <SearchForm onSubmit={this.handleSubmit}>
-          <SearchFormBtn type="submit">
-            <SearchFormBtnLabel>Search</SearchFormBtnLabel>
-          </SearchFormBtn>
-
-          <SearchFormInput
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            value={search}
-            onChange={this.searchResult}
-          />
-        </SearchForm>
-      </SearchbarContainer>
-    );
-  }
-}
-
-Searchbar.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
+        <SearchBarHeader>
+            <SearchForm onSubmit={onSubmit}>
+                <SearchButton type="submit">
+                    <BsSearchHeart/>
+                </SearchButton >
+                <SearchInput
+                    type="text"
+                    name="query"
+                placeholder="Search images and photos"
+                />
+            </SearchForm>
+       </SearchBarHeader>
+    )
+} 
