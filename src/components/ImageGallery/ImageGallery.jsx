@@ -1,17 +1,14 @@
-import PropTypes from "prop-types";
-import { ImageGalleryWrapper } from './ImageGallery.styled';
-import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
+    import { ImageGalleryItem } from "components/ImageGalleryItem/ImageGalleryItem"
+import { ImageGalleryLi, ImageGalleryList } from "./ImageGallery.styled"
 
-
-export const ImageGallery = ({ pictures, onClick }) => {
-  return (
-    <ImageGalleryWrapper>
-      <ImageGalleryItem onClickImg={onClick} pictures={pictures} />
-    </ImageGalleryWrapper>
-  );
-};
-
-ImageGallery.propTypes = {
-  pictures: PropTypes.array.isRequired,
-  onClick: PropTypes.func.isRequired,
-};
+    export const ImageGallery = ({gallery, onImageClick}) => {
+        return (
+            <ImageGalleryList>
+                {gallery.map(item => (
+                    <ImageGalleryLi key={item.id} onClick={() => onImageClick(item.largeImageURL, item.tags)}>
+                    <ImageGalleryItem url={item.webformatURL} tag={item.tags} />
+                </ImageGalleryLi>
+        ))}
+        </ImageGalleryList>
+    )
+    }

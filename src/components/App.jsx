@@ -1,79 +1,96 @@
-import  { React, Component } from 'react';
-import { fetchPictures } from 'services/galleryApi';
-import { Searchbar } from './Searchbar/Searchbar';
-import { ImageGallery } from './ImageGallery/ImageGallery';
-import { Modal } from './Modal/Modal';
-import { Loader } from './Loader/Loader';
-import { Button } from './Button/Button';
-import { Wrapper } from './Searchbar/Searchbar.styled';
-import GlobalStyle from 'globalStyles';
+import { useEffect, useState } from 'react';
+import { fetchImages } from "api";
+import { Button } from "./Button/Button";
+import { ImageGallery } from "./ImageGallery/ImageGallery";
+import { Layout } from "./Layout";
+import { Loader } from "./Loader/Loader";
+import { SearchBar } from "./SearchBar/SearchBar";
+import { toast, Toaster } from 'react-hot-toast';
+import { ModalComponent } from "./Modal/Modal";
 
-export class App extends Component {
-  state = {
-    pictures: [],
-    status: 'idle',
-    showModal: false,
-    largeImageUrl: '',
-    page: 1,
-    query: '',
-    loadMore: null,
-  };
 
-  getLargeImgUrl = imgUrl => {
-    this.setState({ largeImageUrl: imgUrl });
-    this.toggleModal();
-  };
+export const App =() => {
 
-  toggleModal = () => {
-    this.setState(state => ({
-      showModal: !state.showModal,
-    }));
-  };
+  const [query, setQuery] = useState('')
+  const [images, setImages] = useState([])
+  const [page, setPage] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
+  const [loadMore, setLoadMore] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [largeImageURL, setLargeImageURL] = useState('')
+  const [tag, setTag] = useState('')
 
-  searchResult = value => {
-    this.setState({ query: value, page: 1, pictures: [], loadMore: null });
-  };
+  const onSearch = (evt) => {
+     evt.preventDefault();
+     const value = evt.target.query.value.trim('');
+    if (value === '') return toast.error(`Enter your request`);  
+    setQuery(`${Date.now()}/${value}`)
+    setImages([])
+    setPage(1)
+  } 
 
-  handleLoadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
-  };
+  const handlerLoadMore = () => {
+    setPage(page + 1);
+  }
 
-  componentDidUpdate(_, prevState) {
-    const { page, query } = this.state;
-
-    if (
-      prevState.page !== this.state.page ||
-      prevState.query !== this.state.query
-    ) {
-      this.setState({ status: 'loading' });
-
-      fetchPictures(query, page)
-        .then(e =>
-          this.setState(prevState => ({
-            pictures: [...prevState.pictures, ...e.hits],
-            status: 'idle',
-            loadMore: 12 - e.hits.length,
-          }))
-        )
-        .catch(error => console.log(error));
+  useEffect(() => {
+    if (!query) return;
+  async function searchImage() { 
+        try {
+        setLoading(true);
+        setError(false);
+         const { hits, totalHits } = await fetchImages(
+           query.slice(14),
+           page
+         );
+         if (hits.length === 0) {
+           return toast.error(`We didn't find anything. Try again`);
+         } else {
+           if (page === 1) {
+             toast.success(`We find ${totalHits} pictures`);
+           }
+         }
+         setImages((prevState) => [...prevState, ...hits]);;
+          setLoadMore(page < Math.ceil(totalHits / 12))
+       } catch (error) {
+         setError(true);
+         toast.error(`OOPS! THERE WAS AN ERROR!`)
+       }
+       finally {
+         setLoading(false);
+       }
     }
+    searchImage()
+}, [query, page])
+  
+  
+  const openModal = (largeImageURL, tag) => {
+    setIsModalOpen(true);
+    setLargeImageURL(largeImageURL);
+    setTag(tag);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setLargeImageURL('');
+    setTag('');
   }
 
-  render() {
-    const { pictures, status, showModal, largeImageUrl, loadMore } = this.state;
     return (
-      <Wrapper>
-        <GlobalStyle />
-        <Searchbar onSubmit={this.searchResult} />
-        {showModal && (
-          <Modal imgUrl={largeImageUrl} onClose={this.toggleModal} />
-        )}
-        <ImageGallery pictures={pictures} onClick={this.getLargeImgUrl} />
-        {status === 'loading' && <Loader />}
-        {loadMore === 0 && <Button onClick={this.handleLoadMore} />}
-      </Wrapper>
-    );
+      <Layout>
+        <SearchBar onSubmit={onSearch} />
+        {loading && <Loader/>}
+        {error && !loading && <div>OOPS! THERE WAS AN ERROR!</div>}
+        {images.length > 0 && <ImageGallery gallery={images} onImageClick={openModal} />}
+        {loadMore && <Button onLoadMore={handlerLoadMore} />}
+        {isModalOpen && <ModalComponent
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          largeImageURL={largeImageURL}
+          tag={tag}
+        />}
+        <Toaster position="top-right"/>
+      </Layout>
+    )
   }
-}
